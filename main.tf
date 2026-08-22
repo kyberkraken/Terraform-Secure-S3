@@ -16,7 +16,7 @@ resource "random_id" "bucket_suffix"{
 }
 
 resource "aws_s3_bucket" "s3_example" {
-    bucket="unique_bucket_${random_id.bucket_suffix.hex}"
+    bucket="unique-bucket-${random_id.bucket_suffix.hex}"
 
 }
 
