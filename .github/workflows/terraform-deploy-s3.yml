@@ -1,2 +1,33 @@
-test
+name: Terraform Deploy S3
 
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write #Required for requesting JWT from Github
+  contents: read #Required to checkout code. Required explicitely because permissions block is added, otherwise repo content read is default
+
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS creds via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::426501511660:role/GithubAction-Assume-S3
+          aws-region: ap-south-1
+      
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
