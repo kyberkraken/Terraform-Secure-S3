@@ -12,7 +12,7 @@ terraform {
         key = "unique-bucket-33a0cf14/terraform.tfstate"
         region = "ap-south-1"
         encrypt = true #telling terraform to enforce SSE on the tfstate file before it gets saved onto remote s3 backend bucket
-        use_clockfile = true # By default its false and terraform thinks maybe you're using dynamodb for storing lockfiles as done in past so it dosn't even send terraform.tfstate.tflock file to aws
+        use_lockfile = true # By default its false and terraform thinks maybe you're using dynamodb for storing lockfiles as done in past so it dosn't even send terraform.tfstate.tflock file to aws
     }
 }
 
