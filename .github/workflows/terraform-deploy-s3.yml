@@ -17,12 +17,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Debug OIDC Token Subject
-        run: |
-          ACTIONS_ID_TOKEN=$(curl -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" -s | jq -r '.value')
-          echo "JWT Payload:"
-          jq -R 'split(".") | .[1] | @base64d | fromjson' <<< "$ACTIONS_ID_TOKEN"
-
       - name: Configure AWS creds via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
