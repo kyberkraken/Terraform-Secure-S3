@@ -167,8 +167,32 @@ jobs:
         run: terraform apply -auto-approve
 
 
-12) Oncde you add the changes to staging, commit the changes to side branch, push it and merge it to main branch an S3 bucket should've been created
+12) Once you add the changes to staging, commit the changes to side branch, push it and merge it to main branch an S3 bucket should've been created.
+If you're using the official aws-actions/configure-aws-credentials github action, short lived creds will be created for 1 hour. It can be adjusted as follows:
 
+    - name: Configure AWS creds via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: "arn:aws:iam::426501511660:role/GithubAction-Assume-S3"
+          aws-region: "us-east-1"
+          role-duration-settings: 1800 #set to 30 mins
+
+
+13) Terraform github action - Remote Backend - State Locking explained:
+
+Note that whenever terraform github action is running, the tfstate file is locally inside the runner and gets deleted once github action closes. To avoid this either have tfstate file be present in your github repo but it is insecure practice because while configuring some resources like RDS, password remains in tfstate file. Secrets are stored in tfstate file sometimes, sg ip addresses can also be there so best not to have it on version control like git. 
+
+But multiples devs working on same code still need access to tfstate file hence it can be stored in a "Remote Backend" like S3 which also provides default state locking features(from teraform 1.1+ - uses s3 conditional write capability that rpevents duplicate objects to be pushed into s3) ensuring 2 devs running terraform apply will lock tfstate file for devA until his terraform apply is finished and then release the lock and then devB can have the updated tfstate file and run apply accordingly, preventing both of them making changes to the new resources they created.
+
+14) Adding remote backend to terraform provider block in mian.tf:
+backend "s3" {
+
+        bucket = "terraform-state-s3-bucket-084045" #created manually in AWS with S3-SSE encryption enabled
+        key = "unique-bucket-33a0cf14/terraform.tfstate"
+        region = "ap-south-1"
+        encrypt = true #telling terraform to enforce SSE on the tfstate file before it gets saved onto remote s3 backend bucket although happens by default if s3 bucket is sse-s3 encrypted but what if bucket name is changed in future to a bucket that's nto encrypted.
+        use_clockfile = true # By default its false and terraform thinks maybe you're using dynamodb for storing lockfiles as done in past so it dosn't even send terraform.tfstate.tflock file to aws
+    }
 
 
 
