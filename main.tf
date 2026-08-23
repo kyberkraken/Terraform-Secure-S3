@@ -26,8 +26,7 @@ resource "random_id" "bucket_suffix"{
 
 
 resource "aws_s3_bucket" "s3_example" {
-    #bucket="unique-bucket-${random_id.bucket_suffix.hex}"
-    bucket="unique-bucket-33a0cf14"
+    bucket="unique-bucket-${random_id.bucket_suffix.hex}"
     force_destroy=false # ensuring that force destroy cannot be done meaning if thre are objects in the bucekt, you cannot delete it
 
     tags = {
