@@ -11,7 +11,24 @@ permissions:
 
 
 jobs:
-  terraform:
+
+  security-scan:
+    name: Checkov security scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Run checkov action
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          output_format: cli
+          soft_fail: false #this will cause the workflow to break if crit/high findings are discovered 
+
+
+  terraform-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

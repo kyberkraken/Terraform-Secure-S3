@@ -1,8 +1,9 @@
 terraform {
-    required_providers {
+    required_providers { #downloads the binary plugin from hashicorp registry, ~tells terraform what libraries to install, similar to import
         aws = {
             source = "hashicorp/aws"
             version = "~>5.0"
+
         }
     }
 
@@ -16,8 +17,14 @@ terraform {
     }
 }
 
-provider "aws" {
+provider "aws" { # configures how terraform authenticates and interacts with target cloud provider
     region= "ap-south-1"
+    default_tags { #used in case we forget to add tags for any resource
+        tags = {
+            Environment = "Production"
+            ManagedBy = "Terraform"
+        }
+    }
 }
 
 resource "random_id" "bucket_suffix"{
