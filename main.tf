@@ -46,6 +46,46 @@ resource "aws_s3_bucket" "s3_example" {
     }
 }
 
+
+#blocking public access
+resource "aws_s3_bucket_public_access_block" "public_access" {
+    bucket= aws_s3_bucket.s3_example.id
+
+    block_public_acls=true
+    block_public_policy=true
+    ignore_public_acls=true
+    restrict_public_buckets=true
+}
+
+#enabling versioning
+resource "aws_s3_bucket_versioning" "enabling_versioning" {
+    bucket = aws_s3_bucket.s3_example.id
+
+    versioning_configuration {
+        status = "Enabled"
+    }
+
+}
+
+#Disabling ACL use. It is disabled by default. Ensure that even if object was uplaoded by an outside entity(account/user) its ownership remains with the s3 bucket. Disabling ACLs ensure centralized access control using only IAM roles and bucket ACLs
+resource "aws_s3_bucket_ownership_controls" "ownership" {
+  bucket = aws_s3_bucket.s3_example.id
+
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
+#Enabling versioning
+resource "aws_s3_bucket_versioning" "versioning" {
+  bucket = aws_s3_bucket.s3_example.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+
 #Why prevent_destroy = true is important. For production buckets have this configuration so that terraform destroy deosn't delete this bucket while terraform destroy or when the bucket name is changed.
 #If this is not included, if someone mistakenly changed the bucket name, teraform thinks they want to change the name (since the identifier aws_s3_bucket.s3_example points to single resource) and will delete and recreate the bcuekt wwith a new name
 

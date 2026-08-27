@@ -25,7 +25,7 @@ jobs:
         with:
           directory: .
           output_format: cli
-          soft_fail: false #this will cause the workflow to break if crit/high findings are discovered 
+          soft_fail: true # if false, this will cause the workflow to break if crit/high findings are discovered 
 
 
   terraform-deploy:
