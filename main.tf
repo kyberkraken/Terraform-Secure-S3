@@ -37,7 +37,7 @@ resource "aws_s3_bucket" "s3_example" {
     force_destroy=false # ensuring that force destroy cannot be done meaning if thre are objects in the bucekt, you cannot delete it
 
     tags = {
-        Environemnt = "Production"
+        Environment = "Production"
         ManagedBy = "Terraform"
     }
 
